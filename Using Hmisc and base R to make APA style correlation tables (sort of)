@@ -1,0 +1,63 @@
+#--------------------------------
+# The steps are:
+#--------------------------------
+#   1. Save the correlation results to a list object using the 'rcorr' 
+#      function from the Hmisc package, running it on the set of variables 
+#
+#       a. be sure to indicate within the rcorr function that the data set should
+#          be handled as a matrix, using : 
+#
+#             1   listobject <- rcorr(as.matrix(data))
+#
+#   2. The list object contains three elements: [1] r's, [2] n's, and [3] p values.
+#      Store the p values in their own data frame.
+#
+#   3. Assign asterisks to the p values in the data frame conditionally, 
+#      if they meet standard significance criteria. Double the number of columns
+#      and assign asterisks according to which column they match, iteratively.
+#
+#       a. You can conduct this quickly by using column blocks as references in 
+#          the conditional asssignment, for example if you have 6 columns:
+#
+#             1   pvalues[7:12] <- ""   #create six more blank STRING columns
+#             2    # step below effectively runs a for loop, comparing values column by column 
+#             3   pvalues[7:12] [ pvalues[1:6] <= .05 ] <- "*"   
+#
+#   4. Drop the p values from the p value data frame, leaving only the asterisks
+#
+#   5. Create a new data frame that consists of the ROUNDED r values (element 1) from 
+#     the list object we made in step 1 (otherwise it's messy). Do this using:
+#
+#             1 newdataframe <- as.data.frame(round(listobject[[1]], digits=2))
+#
+#       a. blank out the r values that equal 1, using (where k = number of columns): 
+#
+#             1   newdataframe [1:k] [newdataframe [1:k] ==1] <-""
+#
+#   6. add the asterisks from the p value data frame to the new data frame, by
+#      doubling the number of columns, using (where k = number of columns):
+#
+#             1   # NOTE - k should be the same for both data frames
+#             2   newdataframe [(k+1):(2*k)] <- pvalues[1:k] 
+# 
+#   7. add k empty columns to the new data frame using:
+#
+#             1  newdataframe [(2k+1):(3*k)] <- NA
+#
+#   8. Run a for loop to fill in the new empty columns with strings containing
+#      the r coefficients with their corresponding significance asterisks attached.
+#      This can be accomplished using the 'paste' function in the for loop:
+#
+#             1   for (i in 1:k) {
+#             2   newdataframe[(2k+i)] <- paste(newdataframe[,(i)], 
+#             3                           newdataframe [,(k+i)], 
+#             4                           sep="")   
+#             5    }
+#
+#   9. Save these new columns as a correlation table by extracting them to 
+#      their own data frame. Rename them based on the names in 
+#      the newdataframe object, then print them for copying to MS Word using:
+#
+#             1   corrtable <- newdataframe[(2k+1):(3*k)]
+#             2   names(corrtable) <- names(newdataframe[1:k])
+#             3   printcorrtable <- newdataframe[(2k+1):(3*k)]
