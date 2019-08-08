@@ -1,27 +1,31 @@
 #--------------------------------
-# The steps are:
+# The steps are: 
 #--------------------------------
 #   1. Save the correlation results to a list object using the 'rcorr' 
 #      function from the Hmisc package, running it on the set of variables 
 #
 #       a. be sure to indicate within the rcorr function that the data set should
-#          be handled as a matrix, using : 
+#          be handled as a matrix, using: 
 #
 #             1   listobject <- rcorr(as.matrix(data))
 #
 #   2. The list object contains three elements: [1] r's, [2] n's, and [3] p values.
-#      Store the p values in their own data frame.
+#      Store the p values in their own data frame. Then save the number of columns as
+#      as separate value 'k' -- we will use this repeatedly below:
+#
+#             1   pvalues <- as.data.frame(listobject[[3]])
+#             2   k <- ncol(pvalues)
 #
 #   3. Assign asterisks to the p values in the data frame conditionally, 
 #      if they meet standard significance criteria. Double the number of columns
 #      and assign asterisks according to which column they match, iteratively.
 #
 #       a. You can conduct this quickly by using column blocks as references in 
-#          the conditional asssignment, for example if you have 6 columns:
+#          the conditional asssignment, for example if you have 6 columns (so k=6):
 #
-#             1   pvalues[7:12] <- ""   #create six more blank STRING columns
+#             1   pvalues[(k+1):(2*k)] <- ""   #create six more blank STRING columns
 #             2    # step below effectively runs a for loop, comparing values column by column 
-#             3   pvalues[7:12] [ pvalues[1:6] <= .05 ] <- "*"   
+#             3   pvalues[(k+1):(2*k)] [ pvalues[1:k] <= .05 ] <- "*"   
 #
 #   4. Drop the p values from the p value data frame, leaving only the asterisks
 #
@@ -49,7 +53,7 @@
 #      This can be accomplished using the 'paste' function in the for loop:
 #
 #             1   for (i in 1:k) {
-#             2   newdataframe[(2k+i)] <- paste(newdataframe[,(i)], 
+#             2   newdataframe[((2*k)+i)] <- paste(newdataframe[,(i)], 
 #             3                           newdataframe [,(k+i)], 
 #             4                           sep="")   
 #             5    }
